@@ -24,8 +24,8 @@ CREATE TABLE `access` (
   `access_id` int(11) NOT NULL,
   `gate_id` int(11) DEFAULT NULL,
   `user_id` char(14) DEFAULT NULL,
-  `access_open` time DEFAULT NULL,
-  `access_close` time DEFAULT NULL,
+  `access_open` int(11) DEFAULT NULL,
+  `access_close` int(11) DEFAULT NULL,
   PRIMARY KEY (`access_id`),
   KEY `access_user_id` (`user_id`),
   KEY `access_gate_id` (`gate_id`),
@@ -35,7 +35,7 @@ CREATE TABLE `access` (
 
 /*Data for the table `access` */
 
-insert  into `access`(`access_id`,`gate_id`,`user_id`,`access_open`,`access_close`) values (1,1,'5115100166','01:00:00','05:00:00');
+insert  into `access`(`access_id`,`gate_id`,`user_id`,`access_open`,`access_close`) values (0,1,'ayam',NULL,NULL),(1,1,'5115100166',6,20),(2,1,'ayam',1,5);
 
 /*Table structure for table `gate` */
 
@@ -58,17 +58,18 @@ DROP TABLE IF EXISTS `log`;
 CREATE TABLE `log` (
   `log_id` int(11) NOT NULL AUTO_INCREMENT,
   `gate_id` int(11) DEFAULT NULL,
-  `user_group` varchar(64) DEFAULT NULL,
   `user_id` char(14) DEFAULT NULL,
-  `log_opened` timestamp NULL DEFAULT NULL,
+  `log_opened` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`log_id`),
   KEY `log_gate_id` (`gate_id`),
   KEY `log_user_id` (`user_id`),
   CONSTRAINT `log_gate_id` FOREIGN KEY (`gate_id`) REFERENCES `gate` (`gate_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `log_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 /*Data for the table `log` */
+
+insert  into `log`(`log_id`,`gate_id`,`user_id`,`log_opened`) values (1,0,'5115100166','----'),(2,10,'ayam','ayam'),(3,1,'5115100166','Wed May 15 2019 15:16:14 GMT+0700 (Western Indonesia Time)'),(4,1,'5115100166','Wed May 15 2019 15:17:02 GMT+0700 (Western Indonesia Time)'),(5,1,'5115100166','Wed May 15 2019 15:18:17 GMT+0700 (Western Indonesia Time)'),(6,1,'5115100166','Wed May 15 2019 15:23:02 GMT+0700 (Western Indonesia Time)');
 
 /*Table structure for table `user` */
 
@@ -84,7 +85,7 @@ CREATE TABLE `user` (
 
 /*Data for the table `user` */
 
-insert  into `user`(`user_id`,`user_name`,`user_pass`,`user_group`) values ('5115100166','Ivan','5115100166','mahasiswa'),('admin','admin','admin','mahasiswa'),('ayam','ayam','ayam','mahasiswa');
+insert  into `user`(`user_id`,`user_name`,`user_pass`,`user_group`) values ('5115100166','Ivan','5115100166','mahasiswa'),('admin','admin','admin','mahasiswa'),('ayam','ayam','ayam','mahasiswa'),('upin','upin','upin','mahasiswa');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
