@@ -43,32 +43,57 @@ app.post('/login', function (req, res) {
 	  var nrp = post.user_id;
 	  var password = post.user_pass;
 	  var gate_id = post.gate_id;
-	  new Date();
-	  var time = new Date()
+	  var today = new Date();
+	  var time = today.getHours();
 
-	  console.log(time);
-
-	  // console.log(nrp,password);
-	  var sql="SELECT user.user_id, user.user_name, user.user_group, access.access_open, access.access_close FROM `user`,`access` WHERE user.user_id='"+nrp+"' AND user.user_pass = '"+password+"' AND user.user_id = access.user_id";
-
+	  var sql="SELECT user.user_id, user.user_name, user.user_group, gate.gate_id FROM `user`,`gate` WHERE user.user_id='"+nrp+"' AND user.user_pass = '"+password+"' AND gate.gate_id = '"+gate_id+"'";
 	  db.query(sql, function(err, results){      
 	     if(results.length){
+	     	var gate_id = results[0].gate_id;
+	     	var user_id = results[0].user_id;
 	     	var user_name = results[0].user_name;
 
-	     	// var a_open = results[0].access_open
-	     	// var a = a_open.access_open.split(":")
-	     	// var b = new Date(time.getfullyear(), time.getmonth(), time.getdate(), parseint(a[0]), parseint(a[1]), parseint(a[2]))
+	     	var sql2="SELECT * FROM access WHERE user_id = '"+user_id+"' AND gate_id = '"+gate_id+"'";
+	     	db.query(sql2, function(err2, results2)
+	     	{
+	     		if (results2[0].access_open <= time && time <= results2[0].access_close) {
+	     			 
+	        		req.session.loggedin = true;
+					req.session.user_name = user_name;
+			        console.log(results[0].user_name);
 
-	     	req.session.loggedin = true;
-			req.session.user_name = user_name;
-	     	console.log(user_name);
+		            var sql3 = "INSERT INTO `log`(`gate_id`,`user_id`,`log_opened`) VALUES ('" + gate_id + "','" + user_id + "','" + today + "')";
+		            var query = db.query(sql3, function(err3, results3)
+		            {
+		            	if(query){
+					     	res.status(200)
+				            .json({
+				                message: "Log created, Logged in"
+				            })
+				        }
+				        else{
+				        	res.status(400)
+				            .json({
+				                message: "Logged in, but no log"
+				            })
+				        }
+
+		            })
+
+	     		}
+	     		else{
+	     			console.log(results2[0].access_open);
+	     			console.log(time);
+	        		console.log(results2[0].access_close);
+	     			res.status(400)
+		            .json({
+		                message: "Cannot accessed"
+		            })
+	     		}
+	     	})
+
 	     	
-	        console.log(user_name);
-	        
-	        res.status(200)
-            .json({
-                message: "Logged in"
-            })
+			
 	     }
 	     else{
 	        res.status(404)
@@ -83,7 +108,7 @@ app.post('/login', function (req, res) {
 
 app.post('/signup', function(req, res) {
 	  var post  = req.body;
-	  var user = post.user_id
+	  var nrp = post.user_id
 	  var name = post.user_name;
 	  var pass = post.user_pass;
 	  var group = post.user_group;
@@ -91,8 +116,8 @@ app.post('/signup', function(req, res) {
 	  var sql = "INSERT INTO `user`(`user_id`,`user_name`,`user_pass`,`user_group`) VALUES ('" + nrp + "','" + name + "','" + pass + "','" + group + "')";
 
 	  var query = db.query(sql, function(err, results) {
-	  	if(result.length){
-	     res.status(201)
+	  	if(query){
+	     	res.status(201)
             .json({
                 message: "User created"
             })
