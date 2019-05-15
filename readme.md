@@ -45,7 +45,7 @@
 - Query Parameters
 	- None
 
-### Create User (`POST` `/auser`)
+### Create User (`POST` `/signup`)
 
 - Parameters:
 	- `user_id`: `STRING`
