@@ -56,9 +56,35 @@ app.post('/login', function (req, res) {
 	     	var sql2="SELECT * FROM access WHERE user_id = '"+user_id+"' AND gate_id = '"+gate_id+"'";
 	     	db.query(sql2, function(err2, results2)
 	     	{
-	     		if (results2[0].access_open <= time && time <= results2[0].access_close) {
-	     			 
-	        		req.session.loggedin = true;
+	     		if (results2 != 0) {
+		     		if (results2[0].access_open <= time && time <= results2[0].access_close) {
+		     			 
+		        		req.session.loggedin = true;
+						req.session.user_name = user_name;
+				        console.log(results[0].user_name);
+
+			            var sql3 = "INSERT INTO `log`(`gate_id`,`user_id`,`log_opened`) VALUES ('" + gate_id + "','" + user_id + "','" + today + "')";
+			            var query = db.query(sql3, function(err3, results3)
+			            {
+			            	if(query){
+						     	res.status(200)
+					            .json({
+					                message: "Log created, Logged in"
+					            })
+					        }
+					        else{
+					        	res.status(400)
+					            .json({
+					                message: "Logged in, but no log"
+					            })
+					        }
+
+			            })
+
+		     		}
+	     		}
+	     		else if (results2 == 0) {
+	     			req.session.loggedin = true;
 					req.session.user_name = user_name;
 			        console.log(results[0].user_name);
 
@@ -79,7 +105,6 @@ app.post('/login', function (req, res) {
 				        }
 
 		            })
-
 	     		}
 	     		else{
 	     			console.log(results2[0].access_open);
